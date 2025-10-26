@@ -14,7 +14,7 @@ let videoEl;
 let faceapi;
 let detections = [];
 let modeloListo = false;
-let camaraLista = false; // <--- 1. Variable para saber si la cámara inició
+let camaraLista = false; // <--- CORRECCIÓN 1 (Pantalla negra)
 
 function setup() {
   const w = windowWidth < 700 ? windowWidth : 640;
@@ -27,7 +27,7 @@ function setup() {
     audio: false
   }, () => {
     console.log("🎥 Cámara lista");
-    camaraLista = true; // <--- 2. Actualizamos la variable cuando la cámara está lista
+    camaraLista = true; // <--- CORRECCIÓN 1 (Pantalla negra)
   });
 
   videoEl.size(w, h);
@@ -40,7 +40,8 @@ function setup() {
     withDescriptors: false
   };
 
-  faceapi = ml5.faceApi(videoEl.elt, options, modelReady);
+  // <--- CORRECCIÓN 3 (Error 'is not a function')
+  faceapi = ml5.faceapi(videoEl.elt, options, modelReady);
 
   textAlign(CENTER);
   textSize(20);
@@ -50,7 +51,7 @@ function setup() {
 function modelReady() {
   console.log("✅ Modelo cargado correctamente");
   modeloListo = true;
-  // <--- 3. Pasamos el video (videoEl.elt) para que sepa qué detectar
+  // <--- CORRECCIÓN 2 (Animación)
   faceapi.detect(videoEl.elt, gotResults);
 }
 
@@ -60,14 +61,14 @@ function gotResults(err, result) {
     return;
   }
   detections = result;
-  // <--- 4. Pasamos el video (videoEl.elt) en cada ciclo de detección
+  // <--- CORRECCIÓN 2 (Animación)
   faceapi.detect(videoEl.elt, gotResults);
 }
 
 function draw() {
   background(0);
 
-  // <--- 5. Usamos nuestra variable 'camaraLista' para la verificación
+  // <--- CORRECCIÓN 1 (Pantalla negra)
   if (!camaraLista) {
     text("🎥 Iniciando cámara...", width / 2, height / 2);
     return;
@@ -91,7 +92,6 @@ function draw() {
     noStroke();
     fill(255, 100, 150, 160);
     for (let p of puntos) {
-      // Ajustamos 'p.x' por el efecto espejo
       ellipse(width - p.x, p.y, 8, 8);
     }
   } else {
