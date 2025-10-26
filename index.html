@@ -1,34 +1,18 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Huella Digital Viva</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ml5/2.3.0/ml5.min.js"></script>
-<style>
-  body { margin: 0; background: #000; color: white; font-family: sans-serif; }
-</style>
-</head>
-<body>
-<script>
-let ip = "0.0.0.0";
-let valores;
-let video;
-let faceapi;
-let detections = [];
-let estiloSeleccionado = 0;
-
-// Configuración inicial
 function setup() {
   createCanvas(800, 800);
   background(10, 10, 20);
 
-  // Crear video y ocultarlo
-  video = createCapture(VIDEO);
+  // Crear video y esperar que se active antes de cargar el modelo
+  video = createCapture(VIDEO, () => {
+    console.log("✅ Cámara lista, cargando modelo...");
+    const options = { withLandmarks: true, withExpressions: false, withDescriptors: false };
+    faceapi = ml5.faceApi(video, options, modelReady);
+  });
+
   video.size(width, height);
   video.hide();
 
-  // Obtener IP del usuario
+  // Obtener IP
   fetch("https://api64.ipify.org?format=json")
     .then(res => res.json())
     .then(data => {
@@ -37,131 +21,10 @@ function setup() {
       estiloSeleccionado = valores.reduce((a,b)=>a+b,0) % 10;
     });
 
-  // Inicializar modelo facial
-  const options = { withLandmarks: true, withExpressions: false, withDescriptors: false };
-  faceapi = ml5.faceApi(video, options, modelReady);
-
   noStroke();
 }
 
 function modelReady() {
-  console.log("Modelo facial cargado ✅");
+  console.log("🧠 Modelo facial cargado y listo");
   faceapi.detect(gotResults);
 }
-
-function gotResults(err, result) {
-  if (err) { console.error(err); return; }
-  detections = result;
-  faceapi.detect(gotResults);
-}
-
-function draw() {
-  background(10, 10, 20, 20);
-
-  if (detections.length === 0) {
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    text("Permite acceso a la cámara para generar tu retrato vivo 🌙", width/2, height/2);
-    return;
-  }
-
-  const points = detections[0].landmarks.positions;
-
-  // Llamar el estilo seleccionado según IP
-  switch(estiloSeleccionado){
-    case 0: estilo0(points); break;
-    case 1: estilo1(points); break;
-    case 2: estilo2(points); break;
-    case 3: estilo3(points); break;
-    case 4: estilo4(points); break;
-    case 5: estilo5(points); break;
-    case 6: estilo6(points); break;
-    case 7: estilo7(points); break;
-    case 8: estilo8(points); break;
-    case 9: estilo9(points); break;
-  }
-
-  fill(255, 180);
-  textAlign(CENTER);
-  textSize(14);
-  text("Tu huella digital viva: " + ip, width/2, height - 20);
-}
-
-//
-// 🎨 Estilos artísticos adaptados al rostro
-//
-function estilo0(points){
-  for(let p of points){
-    fill(100,150,255,80);
-    ellipse(p._x + random(-5,5), p._y + random(-5,5), random(10,30));
-  }
-}
-
-function estilo1(points){
-  for(let p of points){
-    fill(random(100,255), random(100,255), random(0,100), 60);
-    rect(p._x + random(-3,3), p._y + random(-3,3), random(5,20));
-  }
-}
-
-function estilo2(points){
-  for(let p of points){
-    fill(random(200,255), random(150,200), random(200,255), 50);
-    ellipse(p._x, p._y, random(8,25));
-  }
-}
-
-function estilo3(points){
-  for(let p of points){
-    stroke(255,80);
-    noFill();
-    ellipse(p._x, p._y, sin(frameCount*0.05)*20+30);
-    noStroke();
-  }
-}
-
-function estilo4(points){
-  for(let p of points){
-    fill(255,215,0,50);
-    triangle(p._x, p._y, p._x+random(-10,10), p._y+random(5,15), p._x+random(10,20), p._y+random(-5,10));
-  }
-}
-
-function estilo5(points){
-  for(let p of points){
-    fill(200,0,200,80);
-    ellipse(p._x+sin(frameCount*0.05)*5, p._y+cos(frameCount*0.05)*5, 15);
-  }
-}
-
-function estilo6(points){
-  for(let p of points){
-    fill(random(100,255),255,255,60);
-    rect(p._x, p._y, random(3,15), random(3,15));
-  }
-}
-
-function estilo7(points){
-  for(let p of points){
-    fill(255,150,200,60);
-    ellipse(p._x+sin(frameCount*0.03)*5, p._y+cos(frameCount*0.03)*5, random(8,20));
-  }
-}
-
-function estilo8(points){
-  for(let p of points){
-    fill(0,255,200,60);
-    rect(p._x+random(-5,5), p._y+random(-5,5), random(5,10), random(5,10));
-  }
-}
-
-function estilo9(points){
-  for(let p of points){
-    fill(255,255,255,random(40,100));
-    ellipse(p._x, p._y, random(2,15));
-  }
-}
-</script>
-</body>
-</html>
