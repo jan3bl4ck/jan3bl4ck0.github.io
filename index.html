@@ -5,46 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retrato Interactivo</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <!-- ml5 estable v0.12.2 -->
-  <script src="https://cdn.jsdelivr.net/npm/ml5@0.12.2/dist/ml5.min.js"></script>
+  <!-- ml5 next-gen para faceApi -->
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
 </head>
 
 <body style="margin:0; overflow:hidden; background:#000;">
 <script>
-let video;
+let videoEl;
 let faceapi;
 let detections = [];
 let modeloListo = false;
 
 function setup() {
-  // Ajusta tamaño del canvas según pantalla
   const w = windowWidth < 700 ? windowWidth : 640;
   const h = windowHeight < 500 ? windowHeight : 480;
   createCanvas(w, h);
 
-  // Captura de video con cámara frontal
-  video = createCapture({
-    video: {
-      facingMode: "user",
-      width: w,
-      height: h
-    },
+  // Crear elemento de video HTML oculto
+  videoEl = createCapture({
+    video: { facingMode: "user", width: w, height: h },
     audio: false
-  }, () => {
-    console.log("🎥 Cámara lista");
-  });
-  
-  video.size(w, h);
-  video.hide();
+  }, () => console.log("🎥 Cámara lista"));
 
-  // Configuración de FaceAPI
+  videoEl.size(w, h);
+  videoEl.hide(); // No mostrar el <video> por defecto
+
+  // Inicializar faceApi
   const options = {
     withLandmarks: true,
     withExpressions: false,
-    withDescriptors: false,
+    withDescriptors: false
   };
-  
-  faceapi = ml5.faceApi(video, options, modelReady);
+
+  faceapi = ml5.faceApi(videoEl.elt, options, modelReady);
 
   textAlign(CENTER);
   textSize(20);
@@ -63,13 +56,13 @@ function gotResults(err, result) {
     return;
   }
   detections = result;
-  faceapi.detect(gotResults);
+  faceapi.detect(gotResults); // detectar continuamente
 }
 
 function draw() {
   background(0);
 
-  if (!video.loadedmetadata) {
+  if (!videoEl.loadedmetadata) {
     text("🎥 Iniciando cámara...", width / 2, height / 2);
     return;
   }
@@ -79,11 +72,11 @@ function draw() {
     return;
   }
 
-  // Mostrar video como espejo
+  // Dibujar video en canvas como espejo
   push();
   translate(width, 0);
   scale(-1, 1);
-  image(video, 0, 0, width, height);
+  image(videoEl, 0, 0, width, height);
   pop();
 
   // Dibujar puntos faciales
@@ -101,7 +94,6 @@ function draw() {
 }
 
 function windowResized() {
-  // Ajustar canvas al girar pantalla o cambiar tamaño
   resizeCanvas(windowWidth < 700 ? windowWidth : 640, windowHeight < 500 ? windowHeight : 480);
 }
 </script>
