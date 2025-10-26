@@ -14,21 +14,17 @@ let videoEl;
 let faceapi;
 let detections = [];
 let modeloListo = false;
-// let camaraLista = false; // <--- ELIMINAMOS ESTA LÍNEA
 
 function setup() {
   const w = windowWidth < 700 ? windowWidth : 640;
   const h = windowHeight < 500 ? windowHeight : 480;
   createCanvas(w, h);
 
-  // Crear elemento de video HTML oculto
-  // <--- ELIMINAMOS EL CALLBACK (LA FUNCIÓN DE FLECHA) DE AQUÍ
   videoEl = createCapture({
     video: { facingMode: "user", width: w, height: h },
     audio: false
   });
 
-  // Opcional: puedes verificar en consola cuando esté lista
   videoEl.elt.onloadedmetadata = () => {
     console.log("🎥 Cámara lista (metadata cargada)");
   }
@@ -36,7 +32,6 @@ function setup() {
   videoEl.size(w, h);
   videoEl.hide();
 
-  // Inicializar faceApi
   const options = {
     withLandmarks: true,
     withExpressions: false,
@@ -68,14 +63,15 @@ function gotResults(err, result) {
 function draw() {
   background(0);
 
-  // <--- ¡ESTA ES LA CORRECCIÓN IMPORTANTE!
   // Usamos videoEl.width === 0 para saber si el video aún no está listo.
   if (videoEl.width === 0) {
+    fill(255); // Aseguramos que el texto sea blanco
     text("🎥 Iniciando cámara...", width / 2, height / 2);
     return;
   }
 
   if (!modeloListo) {
+    fill(255); // Aseguramos que el texto sea blanco
     text("🧠 Cargando modelo de rostro...", width / 2, height / 2);
     return;
   }
