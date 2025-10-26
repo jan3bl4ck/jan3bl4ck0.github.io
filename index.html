@@ -14,10 +14,11 @@ let randomOffset = [];
 function setup() {
   createCanvas(800, 800);
   background(20);
+  noLoop();
 
   // Offset aleatorio por cada IP
-  for (let i=0;i<4;i++){
-    randomOffset[i] = random(0.5,1.5);
+  for (let i = 0; i < 4; i++) {
+    randomOffset[i] = random(0.5, 1.5);
   }
 
   // Obtener IP real
@@ -26,6 +27,12 @@ function setup() {
     .then(data => {
       ip = data.ip;
       valores = ip.split(".").map(n => int(n));
+      loop();
+    })
+    .catch(err => {
+      console.error("Error al obtener IP:", err);
+      ip = "Error al obtener IP";
+      valores = [1, 2, 3, 4];
       loop();
     });
 
@@ -36,12 +43,21 @@ function setup() {
 }
 
 function draw() {
-  background(20, 20, 30, 25); // Fondo con leve estela para efecto poético
+  background(20, 20, 30, 25); // Fondo con leve estela
 
-  // Iterar sobre cada número del IP y dibujar estilo correspondiente
-  for (let i=0;i<valores.length;i++){
-    let num = valores[i];
-    switch(num){
+  // 👇 Si aún no hay valores, muestra mensaje y espera
+  if (!valores) {
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    text("Cargando tu IP...", width / 2, height / 2);
+    return;
+  }
+
+  // Dibuja según los números del IP
+  for (let i = 0; i < valores.length; i++) {
+    let num = valores[i] % 10; // asegura que esté entre 0–9
+    switch (num) {
       case 0: estilo0(); break;
       case 1: estilo1(); break;
       case 2: estilo2(); break;
@@ -56,10 +72,10 @@ function draw() {
   }
 
   // Texto poético
-  fill(255,200);
+  fill(255, 200);
   textAlign(CENTER);
   textSize(16);
-  text("Tu huella digital visual: " + ip, width/2, height - 30);
+  text("Tu huella digital visual: " + ip, width / 2, height - 30);
 }
 
 // -------------------- ESTILOS ANIMADOS --------------------
@@ -89,7 +105,6 @@ function estilo1() {
     let x = noise(frameCount*0.01+i)*width;
     let y = noise(frameCount*0.015+i)*height;
     ellipse(x, y, random(20,60));
-    // Pixeles flotando
     fill(random(colores));
     rect(noise(frameCount*0.02+i)*width, noise(frameCount*0.025+i)*height, 5,5);
   }
@@ -123,7 +138,6 @@ function estilo3() {
     fill(random(colores));
     if(random()<0.5) ellipse(noise(frameCount*0.01+i)*width, noise(frameCount*0.015+i)*height, random(20,80));
     else rect(noise(frameCount*0.01+i)*width, noise(frameCount*0.015+i)*height, random(20,80), random(20,80));
-    // manchas
     fill(random(colores));
     ellipse(noise(frameCount*0.02+i)*width, noise(frameCount*0.025+i)*height, random(10,50), random(10,50));
   }
@@ -138,7 +152,7 @@ function estilo4() {
     rect(x + random(-10,10), y + random(-5,5), random(20,80), random(20,80));
     ellipse(x+random(-10,10),y+random(-10,10),random(20,80));
   }
-  copy(0,0,width,height, random(-5,5), random(-5,5), width, height); // glitch animado
+  copy(0,0,width,height, random(-5,5), random(-5,5), width, height);
 }
 
 function estilo5() {
