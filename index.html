@@ -4,10 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retrato Interactivo</title>
-
   <!-- Librerías p5.js y ml5.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.dom.min.js"></script>
   <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
 </head>
 
@@ -16,28 +14,31 @@
 let video;
 let faceapi;
 let detections = [];
-let colores = [];
 
 function setup() {
-  createCanvas(800, 600);
-  background(10, 10, 20);
+  createCanvas(640, 480);
 
-  // Activar cámara
+  // Captura de video
   video = createCapture(VIDEO);
   video.size(width, height);
   video.hide();
 
-  // Cargar el modelo de detección facial
-  const options = { withLandmarks: true, withExpressions: false, withDescriptors: false };
+  // Configuración del modelo Face API
+  const options = {
+    withLandmarks: true,
+    withExpressions: false,
+    withDescriptors: false,
+  };
+
   faceapi = ml5.faceApi(video, options, modelReady);
 
-  for (let i = 0; i < 20; i++) {
-    colores.push(color(random(255), random(255), random(255), random(100, 200)));
-  }
+  textAlign(CENTER);
+  textSize(20);
+  fill(255);
 }
 
 function modelReady() {
-  console.log("✅ Modelo facial cargado y listo");
+  console.log("✅ Modelo de rostro cargado");
   faceapi.detect(gotResults);
 }
 
@@ -47,25 +48,30 @@ function gotResults(err, result) {
     return;
   }
   detections = result;
-  faceapi.detect(gotResults);
+  faceapi.detect(gotResults); // sigue detectando en bucle
 }
 
 function draw() {
-  background(10, 10, 20, 40);
+  background(20, 20, 40, 100);
 
+  // Mostrar video reflejado (como un espejo)
+  push();
+  translate(width, 0);
+  scale(-1, 1);
+  image(video, 0, 0, width, height);
+  pop();
+
+  // Dibujar puntos del rostro si hay detección
   if (detections.length > 0) {
-    let puntos = detections[0].landmarks.positions;
-
+    const puntos = detections[0].landmarks.positions;
+    noStroke();
+    fill(255, 100, 150, 120);
     for (let p of puntos) {
-      fill(random(colores));
-      noStroke();
-      ellipse(p.x, p.y, random(5, 15));
+      ellipse(width - p.x, p.y, 10, 10); // reflejar coordenadas
     }
   } else {
-    fill(255, 40);
-    textAlign(CENTER);
-    textSize(24);
-    text("Mira hacia la cámara...", width / 2, height / 2);
+    fill(255);
+    text("Mira hacia la cámara 👀", width / 2, height / 2);
   }
 }
 </script>
