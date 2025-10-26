@@ -4,8 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retrato Interactivo</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  
   <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  
 </head>
 
 <body style="margin:0; overflow:hidden; background:#000;">
@@ -38,7 +40,10 @@ function setup() {
     withDescriptors: false
   };
 
-  faceapi = ml5.faceapi(videoEl.elt, options, modelReady);
+  /* AQUÍ ESTÁ LA CORRECCIÓN 2:
+    Volvemos a usar la 'A' mayúscula.
+  */
+  faceapi = ml5.faceApi(videoEl.elt, options, modelReady); // <--- LÍNEA CORREGIDA
 
   textAlign(CENTER);
   textSize(20);
@@ -63,15 +68,14 @@ function gotResults(err, result) {
 function draw() {
   background(0);
 
-  // Usamos videoEl.width === 0 para saber si el video aún no está listo.
   if (videoEl.width === 0) {
-    fill(255); // Aseguramos que el texto sea blanco
+    fill(255);
     text("🎥 Iniciando cámara...", width / 2, height / 2);
     return;
   }
 
   if (!modeloListo) {
-    fill(255); // Aseguramos que el texto sea blanco
+    fill(255);
     text("🧠 Cargando modelo de rostro...", width / 2, height / 2);
     return;
   }
