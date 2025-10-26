@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Huella Digital Poética</title>
+<title>Huella Digital Fluida</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
 </head>
 <body style="margin:0; background:#111;">
@@ -14,7 +14,7 @@ let index = 0;
 function setup() {
   createCanvas(800, 800);
   background(15);
-  frameRate(1); // 🌙 Muy lento y contemplativo: 1 dibujo por segundo
+  frameRate(6); // 🎵 ritmo vivo pero no apresurado
 
   // Obtener IP real
   fetch("https://api64.ipify.org?format=json")
@@ -25,24 +25,25 @@ function setup() {
       loop();
     });
 
-  noLoop(); // Espera IP antes de empezar
+  noLoop(); // Esperar IP antes de empezar
 
   // Botón descarga
   let btn = createButton('Descargar retrato');
   btn.position(10, 10);
-  btn.mousePressed(() => saveCanvas('huella_digital_poetica', 'png'));
+  btn.mousePressed(() => saveCanvas('huella_digital_fluida', 'png'));
 }
 
 function draw() {
   if (!valores) return;
 
-  // Fondo con leve velo para sensación de respiración
+  // 🌫 fondo con leve memoria
   noStroke();
-  fill(10, 10, 20, 20);
+  fill(10, 10, 20, 30);
   rect(0, 0, width, height);
 
   let num = valores[index % valores.length] % 10;
 
+  // Cada número tiene su propio estilo definido
   switch(num){
     case 0: estilo0(); break;
     case 1: estilo1(); break;
@@ -57,103 +58,135 @@ function draw() {
   }
 
   // Texto poético
-  fill(255, 220);
+  fill(255, 200);
   textAlign(CENTER);
   textSize(16);
   text("Tu huella digital visual: " + ip, width/2, height - 30);
 
   index++;
+  if (index > valores.length * 60) noLoop(); // Se detiene tras una larga danza
+}
 
-  // 🔹 Se detiene suavemente después de unas vueltas
-  if (index > valores.length * 20) {
-    noLoop();
+// -------------------- ESTILOS (uno por número) --------------------
+
+function estilo0() {
+  let colores = ['#64B5F680','#90CAF980','#4FC3F780','#29B6F680','#0288D180'];
+  for (let i=0;i<random(5,12);i++){
+    fill(random(colores));
+    ellipse(random(width), random(height), random(20,120));
   }
 }
 
-// -------------------- ESTILOS SUAVES --------------------
-
-function estilo0() {
-  let colores = ['#1F75FE80','#0099FF90','#C49A6C80','#6B8E2380'];
-  fill(random(colores));
-  let x = random(width);
-  let y = random(height);
-  let s = random(['triangulo','circulo','rombo']);
-  let size = random(40,100);
-  if(s=='triangulo') triangle(x, y, x+size, y+size, x-size, y+size);
-  else if(s=='rombo') quad(x, y-size/2, x+size/2, y, x, y+size/2, x-size/2, y);
-  else ellipse(x,y,size,size);
-}
-
 function estilo1() {
-  let colores = ['#39ff1480','#ccff0080','#E6ED0780','#FF149380','#8A2BE280','#01FFFF80'];
-  fill(random(colores));
-  ellipse(random(width), random(height), random(30,100));
+  let colores = ['#FF6EC780','#E040FB80','#BA68C880','#8E24AA80','#D500F980'];
+  for (let i=0;i<random(3,8);i++){
+    fill(random(colores));
+    let x=random(width);
+    let y=random(height);
+    push();
+    translate(x,y);
+    rotate(random(TWO_PI));
+    rect(0,0,random(20,100),random(10,50),10);
+    pop();
+  }
 }
 
 function estilo2() {
-  let colores = ['#C8A2C880','#FFC1CC80','#AEC6CF80','#EAD7C380','#D5C4C480'];
-  fill(random(colores));
-  let x=random(width);
-  let y=random(height);
-  let s = random(['luna','corazon']);
-  if(s=='luna') arc(x,y,random(60,100),random(60,100),PI/4,PI+PI/4);
-  else {
+  let colores = ['#FFEB3B70','#FFF59D70','#FFD74070','#FBC02D70'];
+  for (let i=0;i<random(6,10);i++){
+    fill(random(colores));
+    let x=random(width);
+    let y=random(height);
     beginShape();
-    vertex(x, y);
-    bezierVertex(x-15, y-20, x-40, y+10, x, y+40);
-    bezierVertex(x+40, y+10, x+15, y-20, x, y);
+    for(let j=0;j<5;j++){
+      let angle = TWO_PI/5*j + frameCount*0.01;
+      vertex(x+cos(angle)*random(20,50), y+sin(angle)*random(20,50));
+    }
     endShape(CLOSE);
   }
 }
 
 function estilo3() {
-  let colores = ['#FFD70060','#FFA50060','#A8C0D060','#FFC1CC60','#2F3A5660'];
-  fill(random(colores));
-  ellipse(random(width), random(height), random(40,120));
+  let colores = ['#FF8A6580','#FF704380','#E64A1980','#D8431580'];
+  for(let i=0;i<random(4,9);i++){
+    fill(random(colores));
+    ellipse(random(width), random(height), random(30,90));
+  }
 }
 
 function estilo4() {
-  let colores = ['#D4AF3760','#A8B5A260'];
-  fill(random(colores));
-  let x=random(width);
-  let y=random(height);
-  rect(x, y, random(30,80), random(30,80), 10);
+  let colores = ['#A5D6A780','#81C78480','#66BB6A80','#4CAF5080'];
+  for(let i=0;i<random(3,7);i++){
+    fill(random(colores));
+    let x=random(width);
+    let y=random(height);
+    push();
+    translate(x,y);
+    rotate(frameCount*0.02);
+    rect(0,0,random(40,80),random(20,60));
+    pop();
+  }
 }
 
 function estilo5() {
-  let colores = ['#0A0A0A80','#00FFFF80','#FF00FF80','#6A0DAD80'];
-  fill(random(colores));
-  let x=random(width);
-  let y=random(height);
-  triangle(x,y,x+random(40,70),y,x+random(20,40),y+random(50,80));
+  let colores = ['#80DEEA80','#26C6DA80','#00ACC180','#00838F80'];
+  for(let i=0;i<random(5,10);i++){
+    fill(random(colores));
+    let x=random(width);
+    let y=random(height);
+    triangle(x,y,x+random(30,70),y+random(-30,30),x+random(-40,40),y+random(30,70));
+  }
 }
 
 function estilo6() {
-  let colores = ['#F5F5F580','#D9D9D980','#2E2E2E80','#EDE6DB80','#C49A6C80'];
-  fill(random(colores));
-  rect(random(width), random(height), random(30,60), random(30,60));
+  let colores = ['#F5F5F580','#BDBDBD80','#9E9E9E80','#75757580'];
+  for(let i=0;i<random(6,12);i++){
+    fill(random(colores));
+    rect(random(width), random(height), random(10,60), random(10,60));
+  }
 }
 
 function estilo7() {
-  let colores = ['#FFC1CC80','#A8E6CF80','#FF66CC80','#33FFFF80'];
-  fill(random(colores));
-  ellipse(random(width), random(height), random(40,80));
+  let colores = ['#FFB6C180','#F48FB180','#F0629280','#EC407A80'];
+  for(let i=0;i<random(3,8);i++){
+    fill(random(colores));
+    let x=random(width);
+    let y=random(height);
+    beginShape();
+    for(let j=0;j<6;j++){
+      let angle=TWO_PI/6*j;
+      vertex(x+cos(angle)*random(20,50), y+sin(angle)*random(20,50));
+    }
+    endShape(CLOSE);
+  }
 }
 
 function estilo8() {
-  let colores = ['#FFB6C180','#C8A2C880','#87CEFA80','#A8E6CF80','#FFFACD80'];
+  let colores = ['#FFF9C480','#FFF59D80','#FFEE5880','#FFF17680'];
   let c1=color(random(colores));
   let c2=color(random(colores));
-  for(let j=0;j<5;j++){
-    fill(lerpColor(c1,c2,j/5));
-    ellipse(random(width), random(height), random(20,60));
+  for(let j=0;j<random(8,12);j++){
+    fill(lerpColor(c1,c2,j/10));
+    ellipse(random(width), random(height), random(30,100));
   }
 }
 
 function estilo9() {
-  let colores = ['#FFB6C180','#C8A2C880','#87CEFA80','#A8E6CF80','#FFFACD80'];
-  fill(random(colores));
-  rect(random(width), random(height), 5, random(30,70));
+  let colores = ['#BBDEFB80','#64B5F680','#2196F380','#1976D280'];
+  for(let i=0;i<random(3,7);i++){
+    fill(random(colores));
+    let x=random(width);
+    let y=random(height);
+    push();
+    translate(x,y);
+    rotate(random(TWO_PI));
+    beginShape();
+    for(let j=0;j<random(5,8);j++){
+      vertex(cos(j*TWO_PI/6)*random(20,60), sin(j*TWO_PI/6)*random(20,60));
+    }
+    endShape(CLOSE);
+    pop();
+  }
 }
 </script>
 </body>
