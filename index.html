@@ -14,7 +14,7 @@ let videoEl;
 let faceapi;
 let detections = [];
 let modeloListo = false;
-let camaraLista = false; // <--- CORRECCIÓN 1 (Pantalla negra)
+// let camaraLista = false; // <--- ELIMINAMOS ESTA LÍNEA
 
 function setup() {
   const w = windowWidth < 700 ? windowWidth : 640;
@@ -22,16 +22,19 @@ function setup() {
   createCanvas(w, h);
 
   // Crear elemento de video HTML oculto
+  // <--- ELIMINAMOS EL CALLBACK (LA FUNCIÓN DE FLECHA) DE AQUÍ
   videoEl = createCapture({
     video: { facingMode: "user", width: w, height: h },
     audio: false
-  }, () => {
-    console.log("🎥 Cámara lista");
-    camaraLista = true; // <--- CORRECCIÓN 1 (Pantalla negra)
   });
 
+  // Opcional: puedes verificar en consola cuando esté lista
+  videoEl.elt.onloadedmetadata = () => {
+    console.log("🎥 Cámara lista (metadata cargada)");
+  }
+
   videoEl.size(w, h);
-  videoEl.hide(); // No mostrar el <video> por defecto
+  videoEl.hide();
 
   // Inicializar faceApi
   const options = {
@@ -40,7 +43,6 @@ function setup() {
     withDescriptors: false
   };
 
-  // <--- CORRECCIÓN 3 (Error 'is not a function')
   faceapi = ml5.faceapi(videoEl.elt, options, modelReady);
 
   textAlign(CENTER);
@@ -51,7 +53,6 @@ function setup() {
 function modelReady() {
   console.log("✅ Modelo cargado correctamente");
   modeloListo = true;
-  // <--- CORRECCIÓN 2 (Animación)
   faceapi.detect(videoEl.elt, gotResults);
 }
 
@@ -61,15 +62,15 @@ function gotResults(err, result) {
     return;
   }
   detections = result;
-  // <--- CORRECCIÓN 2 (Animación)
   faceapi.detect(videoEl.elt, gotResults);
 }
 
 function draw() {
   background(0);
 
-  // <--- CORRECCIÓN 1 (Pantalla negra)
-  if (!camaraLista) {
+  // <--- ¡ESTA ES LA CORRECCIÓN IMPORTANTE!
+  // Usamos videoEl.width === 0 para saber si el video aún no está listo.
+  if (videoEl.width === 0) {
     text("🎥 Iniciando cámara...", width / 2, height / 2);
     return;
   }
