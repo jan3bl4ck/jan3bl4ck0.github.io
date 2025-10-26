@@ -2,25 +2,19 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Huella Digital Artística Animada</title>
+<title>Huella Digital Poética</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
 </head>
 <body style="margin:0; background:#111;">
 <script>
 let ip = "0.0.0.0";
 let valores;
-let randomOffset = [];
 let index = 0;
 
 function setup() {
   createCanvas(800, 800);
-  background(20);
-  frameRate(5); // 🔹 Animación lenta y poética
-
-  // Genera un offset aleatorio para variedad
-  for (let i=0;i<4;i++){
-    randomOffset[i] = random(0.5,1.5);
-  }
+  background(15);
+  frameRate(1); // 🌙 Muy lento y contemplativo: 1 dibujo por segundo
 
   // Obtener IP real
   fetch("https://api64.ipify.org?format=json")
@@ -31,21 +25,22 @@ function setup() {
       loop();
     });
 
-  noLoop(); // Esperar IP antes de dibujar
+  noLoop(); // Espera IP antes de empezar
 
   // Botón descarga
   let btn = createButton('Descargar retrato');
   btn.position(10, 10);
-  btn.mousePressed(() => saveCanvas('huella_digital', 'png'));
+  btn.mousePressed(() => saveCanvas('huella_digital_poetica', 'png'));
 }
 
 function draw() {
-  if (!valores) return; // Esperar IP
+  if (!valores) return;
 
-  // Fondo con transparencia leve para dejar rastro
-  background(20, 20, 30, 25);
+  // Fondo con leve velo para sensación de respiración
+  noStroke();
+  fill(10, 10, 20, 20);
+  rect(0, 0, width, height);
 
-  // Dibuja un solo estilo por frame
   let num = valores[index % valores.length] % 10;
 
   switch(num){
@@ -61,67 +56,105 @@ function draw() {
     case 9: estilo9(); break;
   }
 
-  index++;
-
   // Texto poético
-  fill(255,200);
+  fill(255, 220);
   textAlign(CENTER);
   textSize(16);
   text("Tu huella digital visual: " + ip, width/2, height - 30);
 
-  // Opcional: detener después de un rato
-  if (index > valores.length * 40) {
+  index++;
+
+  // 🔹 Se detiene suavemente después de unas vueltas
+  if (index > valores.length * 20) {
     noLoop();
   }
 }
 
-// -------------------- ESTILOS ANIMADOS --------------------
+// -------------------- ESTILOS SUAVES --------------------
 
 function estilo0() {
-  let colores = ['#1F75FE','#0099FF','#C49A6C','#6B8E23'];
-  for (let i=0;i<random(1,3);i++){
-    fill(random(colores));
-    let x = random(width);
-    let y = random(height);
-    let s = random(['triangulo','rombo','circulo']);
-    let size = random(30,80);
-    if(s=='triangulo') triangle(x, y, x+size, y+size, x-size, y+size);
-    else if(s=='rombo') quad(x, y-size/2, x+size/2, y, x, y+size/2, x-size/2, y);
-    else ellipse(x,y,size,size);
-  }
+  let colores = ['#1F75FE80','#0099FF90','#C49A6C80','#6B8E2380'];
+  fill(random(colores));
+  let x = random(width);
+  let y = random(height);
+  let s = random(['triangulo','circulo','rombo']);
+  let size = random(40,100);
+  if(s=='triangulo') triangle(x, y, x+size, y+size, x-size, y+size);
+  else if(s=='rombo') quad(x, y-size/2, x+size/2, y, x, y+size/2, x-size/2, y);
+  else ellipse(x,y,size,size);
 }
 
 function estilo1() {
-  let colores = ['#39ff14','#ccff00','#E6ED07','#FF1493','#8A2BE2','#0b36c3','#01FFFF'];
-  for (let i=0;i<random(2,5);i++){
-    fill(random(colores));
-    let x = random(width);
-    let y = random(height);
-    ellipse(x, y, random(20,60));
-  }
+  let colores = ['#39ff1480','#ccff0080','#E6ED0780','#FF149380','#8A2BE280','#01FFFF80'];
+  fill(random(colores));
+  ellipse(random(width), random(height), random(30,100));
 }
 
 function estilo2() {
-  let colores = ['#C8A2C8','#FFC1CC','#AEC6CF','#EAD7C3','#D5C4C4'];
-  for(let i=0;i<random(1,4);i++){
-    fill(random(colores));
-    let x=random(width);
-    let y=random(height);
-    let s = random(['circulo','luna','corazon','mariposa']);
-    if(s=='circulo') arc(x,y,random(40,80),random(40,80),0,PI+QUARTER_PI);
-    else if(s=='luna') arc(x,y,random(40,70),random(40,70),PI/4,PI+PI/4);
-    else if(s=='corazon'){ 
-      beginShape();
-      vertex(x, y);
-      bezierVertex(x-15, y-20, x-40, y+10, x, y+40);
-      bezierVertex(x+40, y+10, x+15, y-20, x, y);
-      endShape(CLOSE);
-    } else if(s=='mariposa'){
-      ellipse(x-15,y,15,40);
-      ellipse(x+15,y,15,40);
-    }
+  let colores = ['#C8A2C880','#FFC1CC80','#AEC6CF80','#EAD7C380','#D5C4C480'];
+  fill(random(colores));
+  let x=random(width);
+  let y=random(height);
+  let s = random(['luna','corazon']);
+  if(s=='luna') arc(x,y,random(60,100),random(60,100),PI/4,PI+PI/4);
+  else {
+    beginShape();
+    vertex(x, y);
+    bezierVertex(x-15, y-20, x-40, y+10, x, y+40);
+    bezierVertex(x+40, y+10, x+15, y-20, x, y);
+    endShape(CLOSE);
   }
 }
 
 function estilo3() {
-  let colores = ['#32CD32','#FFD700','#FF4C4C','#FFA500','#
+  let colores = ['#FFD70060','#FFA50060','#A8C0D060','#FFC1CC60','#2F3A5660'];
+  fill(random(colores));
+  ellipse(random(width), random(height), random(40,120));
+}
+
+function estilo4() {
+  let colores = ['#D4AF3760','#A8B5A260'];
+  fill(random(colores));
+  let x=random(width);
+  let y=random(height);
+  rect(x, y, random(30,80), random(30,80), 10);
+}
+
+function estilo5() {
+  let colores = ['#0A0A0A80','#00FFFF80','#FF00FF80','#6A0DAD80'];
+  fill(random(colores));
+  let x=random(width);
+  let y=random(height);
+  triangle(x,y,x+random(40,70),y,x+random(20,40),y+random(50,80));
+}
+
+function estilo6() {
+  let colores = ['#F5F5F580','#D9D9D980','#2E2E2E80','#EDE6DB80','#C49A6C80'];
+  fill(random(colores));
+  rect(random(width), random(height), random(30,60), random(30,60));
+}
+
+function estilo7() {
+  let colores = ['#FFC1CC80','#A8E6CF80','#FF66CC80','#33FFFF80'];
+  fill(random(colores));
+  ellipse(random(width), random(height), random(40,80));
+}
+
+function estilo8() {
+  let colores = ['#FFB6C180','#C8A2C880','#87CEFA80','#A8E6CF80','#FFFACD80'];
+  let c1=color(random(colores));
+  let c2=color(random(colores));
+  for(let j=0;j<5;j++){
+    fill(lerpColor(c1,c2,j/5));
+    ellipse(random(width), random(height), random(20,60));
+  }
+}
+
+function estilo9() {
+  let colores = ['#FFB6C180','#C8A2C880','#87CEFA80','#A8E6CF80','#FFFACD80'];
+  fill(random(colores));
+  rect(random(width), random(height), 5, random(30,70));
+}
+</script>
+</body>
+</html>
