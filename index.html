@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Retrato Interactivo</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-  <!-- ml5 next-gen para faceApi -->
   <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
 </head>
 
@@ -15,6 +14,7 @@ let videoEl;
 let faceapi;
 let detections = [];
 let modeloListo = false;
+let camaraLista = false; // <--- 1. Variable para saber si la cámara inició
 
 function setup() {
   const w = windowWidth < 700 ? windowWidth : 640;
@@ -25,7 +25,10 @@ function setup() {
   videoEl = createCapture({
     video: { facingMode: "user", width: w, height: h },
     audio: false
-  }, () => console.log("🎥 Cámara lista"));
+  }, () => {
+    console.log("🎥 Cámara lista");
+    camaraLista = true; // <--- 2. Actualizamos la variable cuando la cámara está lista
+  });
 
   videoEl.size(w, h);
   videoEl.hide(); // No mostrar el <video> por defecto
@@ -47,7 +50,8 @@ function setup() {
 function modelReady() {
   console.log("✅ Modelo cargado correctamente");
   modeloListo = true;
-  faceapi.detect(gotResults);
+  // <--- 3. Pasamos el video (videoEl.elt) para que sepa qué detectar
+  faceapi.detect(videoEl.elt, gotResults);
 }
 
 function gotResults(err, result) {
@@ -56,13 +60,15 @@ function gotResults(err, result) {
     return;
   }
   detections = result;
-  faceapi.detect(gotResults); // detectar continuamente
+  // <--- 4. Pasamos el video (videoEl.elt) en cada ciclo de detección
+  faceapi.detect(videoEl.elt, gotResults);
 }
 
 function draw() {
   background(0);
 
-  if (!videoEl.loadedmetadata) {
+  // <--- 5. Usamos nuestra variable 'camaraLista' para la verificación
+  if (!camaraLista) {
     text("🎥 Iniciando cámara...", width / 2, height / 2);
     return;
   }
@@ -85,6 +91,7 @@ function draw() {
     noStroke();
     fill(255, 100, 150, 160);
     for (let p of puntos) {
+      // Ajustamos 'p.x' por el efecto espejo
       ellipse(width - p.x, p.y, 8, 8);
     }
   } else {
